@@ -1,0 +1,37 @@
+{
+    "displayName": "Liftoff 2",
+    "uuid": "d89f9325-7b44-42ee-b911-52cc12befbdc",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "capabilities": [
+        "background"
+    ],
+    "targetPlatforms": [
+        "emery"
+    ],
+    "watchapp": {
+        "watchface": false
+    },
+    "messageKeys": {
+        "LaunchDate": 10000,
+        "LaunchName": 10001,
+        "LaunchID": 10002,
+        "FetchData": 10003,
+        "ErrorData": 10004
+    },
+    "resources": {
+        "media": []
+    },
+    "name": "liftoff-2",
+    "shortName": "Liftoff 2",
+    "longName": "Liftoff 2",
+    "versionLabel": "1.0",
+    "companyName": "Meep Apps",
+    "appKeys": {
+        "LaunchDate": 10000,
+        "LaunchName": 10001,
+        "LaunchID": 10002,
+        "FetchData": 10003,
+        "ErrorData": 10004
+    }
+}

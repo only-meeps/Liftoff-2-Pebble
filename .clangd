@@ -1,0 +1,19 @@
+CompileFlags:
+  Add: [
+    "-isystem", "/home/finn/.pebble-sdk/SDKs/4.9.77/toolchain/arm-none-eabi/arm-none-eabi/include",
+    "-I/home/finn/.pebble-sdk/SDKs/4.9.77/sdk-core/pebble/common/include",
+    "-I/home/finn/.pebble-sdk/SDKs/4.9.77/sdk-core/pebble/emery/include",
+    "-I/home/finn/pebble moving lines test/build/include",
+    "-I/home/finn/pebble moving lines test/build/emery/src",
+    "-DPBL_PLATFORM_EMERY",
+    "-DPBL_COLOR", 
+    "-DPBL_SDK_3",
+    "-D_TIME_H_",
+    "-std=c11",
+    "--target=arm-none-eabi",
+    "-xc"
+  ]
+  Remove: [-mthumb, -mfloat-abi=soft, -fstack-usage, -W*, -std=*, -xc++] 
+
+Diagnostics:
+  Suppress: ["redefinition", "pp_file_not_found", "drv_unknown_argument"]

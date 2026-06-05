@@ -1,0 +1,37 @@
+{
+  "name": "liftoff-2",
+  "author": "Meep Apps",
+  "version": "1.0.0",
+  "keywords": [
+    "pebble-app"
+  ],
+  "private": true,
+  "dependencies": {
+    "@moddable/pebbleproxy": "^0.1.8"
+  },
+  "pebble": {
+    "displayName": "Liftoff 2",
+    "uuid": "d89f9325-7b44-42ee-b911-52cc12befbdc",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "capabilities": [
+      "background"
+    ],
+    "targetPlatforms": [
+      "emery"
+    ],
+    "watchapp": {
+      "watchface": false
+    },
+    "messageKeys": [
+      "LaunchDate",
+      "LaunchName",
+      "LaunchID",
+      "FetchData",
+      "ErrorData"
+    ],
+    "resources": {
+      "media": []
+    }
+  }
+}
