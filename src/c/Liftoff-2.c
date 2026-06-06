@@ -52,7 +52,21 @@ static void update_timeline() {
   }
 }
 
-static void timeline_subscribe() {}
+static void subscribe() {
+  DictionaryIterator *out_iter;
+  AppMessageResult result = app_message_outbox_begin(&out_iter);
+  if (result == APP_MSG_OK) {
+    int value = 0;
+    dict_write_int(out_iter, MESSAGE_KEY_Subscribe, &value, sizeof(int), true);
+
+    result = app_message_outbox_send();
+    if (result != APP_MSG_OK) {
+      APP_LOG(APP_LOG_LEVEL_ERROR, "Error sending the outbox: %d", (int)result);
+    }
+  } else {
+    APP_LOG(APP_LOG_LEVEL_ERROR, "Error preparing the outbox: %d", (int)result);
+  }
+}
 
 static void prv_select_click_handler(ClickRecognizerRef recognizer,
                                      void *context) {
@@ -86,6 +100,7 @@ static void prv_window_unload(Window *window) {
 
 static void prv_init(void) {
   s_window = window_create();
+
   window_set_click_config_provider(s_window, prv_click_config_provider);
   window_set_window_handlers(s_window, (WindowHandlers){
                                            .load = prv_window_load,
@@ -98,6 +113,7 @@ static void prv_init(void) {
   app_message_register_inbox_received(inbox_received_callback);
   app_message_register_outbox_sent(outbox_sent_callback);
   app_message_open(512, 64);
+  subscribe();
 }
 
 static void prv_deinit(void) { window_destroy(s_window); }

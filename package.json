@@ -9,6 +9,7 @@
   "dependencies": {
     "@moddable/pebbleproxy": "^0.1.8"
   },
+  "menuIcon": true,
   "pebble": {
     "displayName": "Liftoff 2",
     "uuid": "d89f9325-7b44-42ee-b911-52cc12befbdc",
@@ -28,10 +29,19 @@
       "LaunchName",
       "LaunchID",
       "FetchData",
-      "ErrorData"
+      "ErrorData",
+      "Subscribe"
     ],
     "resources": {
-      "media": []
+      "media": [
+        {
+          "type": "bitmap",
+          "name": "menuIcon",
+          "file": "Icons/25px_Rocket.png",
+          "compatibility": "2.7",
+          "storageFormat": "pbi"
+        }
+      ]
     }
   }
 }

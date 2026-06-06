@@ -1,5 +1,6 @@
 const moddableProxy = require("@moddable/pebbleproxy");
 var USER_TOKEN = null;
+const SERVER_URL = ""
 Pebble.addEventListener('ready', moddableProxy.readyReceived);
 Pebble.addEventListener('appmessage', moddableProxy.appMessageReceived);
 
@@ -24,7 +25,41 @@ Pebble.addEventListener('appmessage', function (e) {
     if (dict && dict['FetchData'] !== undefined) {
         fetchData();
     }
+    else if (dict && dict['Subscribe'] !== undefined) {
+        timeline_subscribe();
+    }
 });
+
+function timeline_subscribe() {
+    var xhr = new XMLHttpRequest();
+
+    const requestData = {
+        "usrtoken": USER_TOKEN,
+        "subscribe": "true"
+    };
+    xhr.onload = function () {
+        try {
+            const json = JSON.parse(this.responseText);
+            console.log("Server responded: " + json.message);
+            if (json.success == false) {
+                console.log("Server request failed. Retrying...");
+                timeline_subscribe();
+            }
+            else {
+                console.log("Server response 200. Pebble subscribed.");
+            }
+        } catch (e) {
+            console.log("Error parsing JSON: " + e);
+        }
+    };
+
+    xhr.onerror = function () {
+        console.log('Network request failed');
+    };
+
+    xhr.open('GET', SERVER_URL);
+    xhr.send(JSON.stringify(requestData));
+}
 
 function fetchData() {
     if (USER_TOKEN != null) {
@@ -116,6 +151,7 @@ function sendErrorMessage(message) {
 }
 
 const PEBBLE_TIMELINE_URL = 'https://timeline-api.rebble.io/v1/user/pins';
+
 
 function pushTimelinePin(pinData) {
     if (USER_TOKEN != null) {
