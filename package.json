@@ -1,13 +1,14 @@
 {
   "name": "liftoff-2",
   "author": "Meep Apps",
-  "version": "1.0.0",
+  "version": "9.0.0",
   "keywords": [
     "pebble-app"
   ],
   "private": true,
   "dependencies": {
-    "@moddable/pebbleproxy": "^0.1.8"
+    "@moddable/pebbleproxy": "^0.1.8",
+    "@rebble/clay": "^1.0.10"
   },
   "menuIcon": true,
   "pebble": {
@@ -16,30 +17,75 @@
     "sdkVersion": "3",
     "enableMultiJS": true,
     "capabilities": [
-      "background"
+      "timeline",
+      "configurable"
     ],
     "targetPlatforms": [
-      "emery"
+      "emery",
+      "diorite",
+      "chalk",
+      "gabbro",
+      "flint",
+      "basalt",
+      "aplite"
     ],
     "watchapp": {
       "watchface": false
     },
     "messageKeys": [
-      "LaunchDate",
-      "LaunchName",
-      "LaunchID",
       "FetchData",
       "ErrorData",
-      "Subscribe"
+      "Subscribe",
+      "Launches",
+      "Events",
+      "wkut",
+      "updatewkut",
+      "FinishedUpdates"
     ],
     "resources": {
       "media": [
         {
           "type": "bitmap",
-          "name": "menuIcon",
+          "name": "MENU_ICON",
           "file": "Icons/25px_Rocket.png",
           "compatibility": "2.7",
-          "storageFormat": "pbi"
+          "storageFormat": "pbi",
+          "menuIcon": true
+        },
+        {
+          "type": "bitmap",
+          "name": "WAKEUP_IMAGE",
+          "file": "Images/UpdatingTimeline.png"
+        },
+        {
+          "type": "png",
+          "name": "TL_ICON_SMALL",
+          "file": "Timeline/Timeline_Icon_Small.png",
+          "spaceOptimized": true
+        },
+        {
+          "type": "png",
+          "name": "TL_ICON_MEDIUM",
+          "file": "Timeline/Timeline_Icon_Medium.png",
+          "spaceOptimized": true
+        },
+        {
+          "type": "png",
+          "name": "TL_ICON_LARGE",
+          "file": "Timeline/Timeline_Icon_Large.png",
+          "spaceOptimized": true
+        }
+      ],
+      "publishedMedia": [
+        {
+          "name": "TL_ICON",
+          "id": 2,
+          "glance": "TL_ICON_SMALL",
+          "timeline": {
+            "tiny": "TL_ICON_SMALL",
+            "small": "TL_ICON_MEDIUM",
+            "large": "TL_ICON_LARGE"
+          }
         }
       ]
     }

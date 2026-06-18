@@ -1,0 +1,52 @@
+[
+    {
+        "type": "heading",
+        "id": "main-heading",
+        "defaultValue": "App Settings",
+        "size": 1
+    },
+    {
+        "type": "text",
+        "defaultValue": "Which events would you like to subscribe to? (Existing events will not change)"
+    },
+    {
+        "type": "section",
+        "items": [
+            {
+                "type": "toggle",
+                "messageKey": "Launches",
+                "label": "Launches",
+                "defaultValue": true
+            },
+            {
+                "type": "toggle",
+                "messageKey": "Events",
+                "label": "Other events (ie. announcements, docking, ect.)",
+                "defaultValue": true
+            }
+        ]
+    },
+    {
+        "type": "text",
+        "defaultValue": "Wakeup settings (for updating timeline)"
+    },
+    {
+        "type": "section",
+        "items": [
+            {
+                "type": "input",
+                "messageKey": "wkut",
+                "defaultValue": "1:00",
+                "label": "Wakeup Time",
+                "attributes": {
+                    "placeholder": "wakeup time",
+                    "type": "time"
+                }
+            }
+        ]
+    },
+    {
+        "type": "submit",
+        "defaultValue": "Save Settings"
+    }
+]
