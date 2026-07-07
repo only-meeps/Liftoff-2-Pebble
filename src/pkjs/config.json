@@ -7,7 +7,7 @@
     },
     {
         "type": "text",
-        "defaultValue": "Which events would you like to subscribe to? (Existing events will not change)"
+        "defaultValue": "Event settings (Will not change existing)"
     },
     {
         "type": "section",
@@ -28,20 +28,28 @@
     },
     {
         "type": "text",
-        "defaultValue": "Wakeup settings (for updating timeline)"
+        "defaultValue": "Reminder settings"
     },
     {
         "type": "section",
         "items": [
             {
-                "type": "input",
-                "messageKey": "wkut",
-                "defaultValue": "1:00",
-                "label": "Wakeup Time",
-                "attributes": {
-                    "placeholder": "wakeup time",
-                    "type": "time"
-                }
+                "type": "slider",
+                "messageKey": "LaunchReminders",
+                "label": "Launch reminders",
+                "defaultValue": 0,
+                "max": 30,
+                "min": 0,
+                "description": "Leave at 0 to turn off"
+            },
+            {
+                "type": "slider",
+                "messageKey": "EventReminders",
+                "label": "Other reminders (ie. announcements, docking, ect.)",
+                "defaultValue": 0,
+                "max": 30,
+                "min": 0,
+                "description": "Leave at 0 to turn off"
             }
         ]
     },

@@ -1,7 +1,7 @@
 {
   "name": "liftoff-2",
   "author": "Meep Apps",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "keywords": [
     "pebble-app"
   ],
@@ -40,7 +40,9 @@
       "Events",
       "wkut",
       "updatewkut",
-      "FinishedUpdates"
+      "FinishedUpdates",
+      "LaunchReminders",
+      "EventReminders"
     ],
     "resources": {
       "media": [

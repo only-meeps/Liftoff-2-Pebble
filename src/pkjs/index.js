@@ -44,15 +44,15 @@ function getClaySetting(keyName) {
     }
 }
 
-Pebble.addEventListener('webviewclosed', function (e) {
-    if (e && e.response) {
-        console.log(getClaySetting("wkut"));
-        var dict = {
-            'updatewkut': getClaySetting("wkut")
-        }
-        Pebble.sendAppMessage(dict);
-    }
-});
+// Pebble.addEventListener('webviewclosed', function (e) {
+//     if (e && e.response) {
+//         console.log(getClaySetting("wkut"));
+//         var dict = {
+//             'updatewkut': getClaySetting("wkut")
+//         }
+//         Pebble.sendAppMessage(dict);
+//     }
+// });
 
 function timeline_subscribe() {
     var xhr = new XMLHttpRequest();
@@ -88,12 +88,13 @@ function timeline_subscribe() {
 function fetchData(launches, events) {
     console.log(launches, events);
     var pendingRequests = 0;
+    var error = 0;
     if (launches || launches == "true") pendingRequests++;
     if (events || events == "true") pendingRequests++;
 
     function checkCompletion() {
         pendingRequests--;
-        if (pendingRequests <= 0) {
+        if (pendingRequests <= 0 && error == 0) {
             var dict = {
                 'FinishedUpdates': "True"
             };
@@ -117,11 +118,20 @@ function fetchData(launches, events) {
                 const json = JSON.parse(this.responseText);
                 if (json.results != null) {
                     console.log("Fetched " + json.results.length + " launches.");
-                    sendNextLaunchMessage(json.results, 0);
+                    var reminderTime = getClaySetting("LaunchReminders");
+                    if (reminderTime > 0) {
+                        sendNextLaunchMessage(json.results, 0, true, reminderTime);
+                    }
+                    else {
+                        sendNextLaunchMessage(json.results, 0, false, 0);
+                    }
+
                 } else {
+                    error = 1;
                     sendErrorMessage(json.detail);
                 }
             } catch (e) {
+                error = 2;
                 console.log("Error parsing launch JSON: " + e);
             }
             checkCompletion();
@@ -145,11 +155,18 @@ function fetchData(launches, events) {
                 const json = JSON.parse(this.responseText);
                 if (json.results != null) {
                     console.log("Fetched " + json.results.length + " events.");
-                    sendNextEventMessage(json.results, 0);
+                    var reminderTime = getClaySetting("EventReminders");
+                    if (reminderTime > 0) {
+                        sendNextEventMessage(json.results, 0, true, reminderTime);
+                    } else {
+                        sendNextEventMessage(json.results, 0, false, 0);
+                    }
                 } else {
+                    error = 1;
                     sendErrorMessage(json.detail);
                 }
             } catch (e) {
+                error = 2;
                 console.log("Error parsing event JSON: " + e);
             }
             checkCompletion();
@@ -165,7 +182,7 @@ function fetchData(launches, events) {
     }
 }
 
-function sendNextLaunchMessage(items, index) {
+function sendNextLaunchMessage(items, index, reminder, reminderTime) {
     console.log("Sending message...");
     if (index >= items.length) {
         console.log("All messages sent successfully!");
@@ -177,31 +194,88 @@ function sendNextLaunchMessage(items, index) {
     var missionType = (item.mission && item.mission.type) ? item.mission.type : "Launch";
     var itemName = (item.name).toString();
     var idx = itemName.indexOf("|");
+    var missionName = (item.mission && item.mission.name) ? item.mission.name : "No mission specified";
+    var missionDesc = (item.mission && item.mission.description) ? item.mission.description : "No description available.";
+    var locationName = (item.location && item.location.name) ? item.location.name : "Unknown Location";
+
+    if (reminder) {
     if (idx != -1) {
         var name = itemName.slice(0, idx);
     }
+    if (reminder) {
+        const date = new Date(item.net);
 
-    const pinData = {
-        "id": item.id,
-        "time": item.net,
-        "layout": {
-            "type": "genericPin",
-            "title": name,
-            "tinyIcon": "app://images/TL_ICON",
-            "smallIcon": "app://images/TL_ICON",
-            "largeIcon": "app://images/TL_ICON",
-            "body": "Mission: " + item.mission.name + "\n \nMisson Description:\n" + item.mission.description
-        }
-    };
-    pushTimelinePin(pinData);
-    const cSeconds = Math.floor(new Date(item.net).getTime() / 1000);
+        date.setUTCMinutes(date.getUTCMinutes() - reminderTime);
 
-    console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + item.id);
-    sendNextLaunchMessage(items, index + 1);
+        const updatedDateStr = date.toISOString();
+        const pinData = {
+            "id": item.id,
+            "time": item.net,
+            "layout": {
+                "type": "genericPin",
+                "title": name,
+                "tinyIcon": "app://images/TL_ICON",
+                "body": "Mission: " + missionName + "\n \nMisson Description:\n" + missionDesc,
+                "location": locationName,
+                "lastupdated": new Date().toISOString()
+            },
+            "reminders": [
+                {
+                    "time": updatedDateStr,
+                    "layout": {
+                        "type": "genericReminder",
+                        "tinyIcon": "app://images/TL_ICON",
+                        "title": name + " takeoff in T-" + reminderTime + "m"
+                    }
+                }
+            ],
+            "actions": [
+                {
+                    "title": "Force update",
+                    "type": "openWatchApp",
+                    "launchCode": 1
+                }
+            ]
+        };
+        pushTimelinePin(pinData);
+        const cSeconds = Math.floor(new Date(item.net).getTime() / 1000);
+
+        console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + item.id + " reminder: " + reminderTime + " minutes before");
+
+        sendNextLaunchMessage(items, index + 1, true, reminderTime);
+    }
+    else {
+        const pinData = {
+            "id": item.id,
+            "time": item.net,
+            "layout": {
+                "type": "genericPin",
+                "title": name,
+                "tinyIcon": "app://images/TL_ICON",
+                "body": "Mission: " + missionName + "\n \nMisson Description:\n" + missionDesc,
+                "location": locationName,
+                "lastupdated": new Date().toISOString()
+            },
+            "actions": [
+                {
+                    "title": "Force update",
+                    "type": "openWatchApp",
+                    "launchCode": 1
+                }
+            ]
+        };
+        pushTimelinePin(pinData);
+        const cSeconds = Math.floor(new Date(item.net).getTime() / 1000);
+
+        console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + item.id);
+        sendNextLaunchMessage(items, index + 1, false, 0);
+    }
+
 
 }
+}
 
-function sendNextEventMessage(items, index) {
+function sendNextEventMessage(items, index, reminder, reminderTime) {
     console.log("Sending message...");
     if (index >= items.length) {
         console.log("All messages sent successfully!");
@@ -212,29 +286,76 @@ function sendNextEventMessage(items, index) {
     var item = items[index];
     var name = (item.name).toString();
 
-    const pinData = {
-        "id": item.id,
-        "time": item.date,
-        "layout": {
-            "type": "genericPin",
-            "title": name,
-            "tinyIcon": "system://images/TIMELINE_CALENDAR",
-            "body": "Event Description:\n" + item.description
-        }
-    };
-    pushTimelinePin(pinData);
-    const cSeconds = Math.floor(new Date(item.date).getTime() / 1000);
+    if (reminder) {
+        const date = new Date(item.date);
 
-    console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + item.id);
-    sendNextEventMessage(items, index + 1);
+        date.setUTCMinutes(date.getUTCMinutes() - reminderTime);
 
-}
+        const updatedDateStr = date.toISOString();
+        const pinData = {
+            "id": item.id,
+            "time": item.date,
+            "layout": {
+                "type": "genericPin",
+                "title": name,
+                "tinyIcon": "system://images/TIMELINE_CALENDAR",
+                "body": "Event Description:\n" + item.description,
+                "location": item.location.name,
+                "lastupdated": new Date().toISOString()
+            },
+            "reminders": [
+                {
+                    "time": updatedDateStr,
+                    "layout": {
+                        "type": "genericReminder",
+                        "tinyIcon": "system://images/TIMELINE_CALENDAR",
+                        "title": name + " happening soon!"
+                    }
+                }
+            ],
+            "actions": [
+                {
+                    "title": "Force update",
+                    "type": "openWatchApp",
+                    "launchCode": 1
+                }
+            ]
+        };
+        pushTimelinePin(pinData);
+        const cSeconds = Math.floor(new Date(item.date).getTime() / 1000);
 
-function sendErrorMessage(message) {
-    var dict = {
-        'ErrorData': message
+        console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + item.id + " reminder: " + reminderTime + " minutes before");
+        sendNextEventMessage(items, index + 1, true, reminderTime);
     }
-    Pebble.sendAppMessage(dict);
+    else {
+        const pinData = {
+            "id": item.id,
+            "time": item.date,
+            "layout": {
+                "type": "genericPin",
+                "title": name,
+                "tinyIcon": "system://images/TIMELINE_CALENDAR",
+                "body": "Event Description:\n" + item.description,
+                "location": item.location.name,
+                "lastupdated": new Date().toISOString()
+            },
+            "actions": [
+                {
+                    "title": "Force update",
+                    "type": "openWatchApp",
+                    "launchCode": 1
+                }
+            ]
+        };
+        pushTimelinePin(pinData);
+        const cSeconds = Math.floor(new Date(item.date).getTime() / 1000);
+
+        console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + item.id);
+        sendNextEventMessage(items, index + 1, false, 0);
+    }
+
+
+
 }
 
 function sendErrorMessage(message) {
