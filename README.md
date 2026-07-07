@@ -6,5 +6,5 @@ Unfortunately, due to the current pebble app being unable to retrieve info for t
 Contact me at ffkoenig@gmail.com or @awesomemeeps (on the rebble discord server) if you have any issues or would like something to be added! 
 
 Future updates: 
--Using a server (once server side timeline pins is added to the pebble app)
--Better UI on the main app
+\n-Using a server (once server side timeline pins is added to the pebble app)
+\n-Better UI on the main app
