@@ -1,4 +1,4 @@
-#Liftoff 2
+# Liftoff 2
 
 Inspired by the watch timeline app liftoff, this app shows timeline pins about upcoming launches with a small description provided thespacedevs.com. 
 Unfortunately, due to the current pebble app being unable to retrieve info for timeline pins from servers, this app needs to trigger a wakeup call to fetch the api. 
