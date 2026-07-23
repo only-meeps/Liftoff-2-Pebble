@@ -1,7 +1,7 @@
 {
   "name": "liftoff-2",
   "author": "Meep Apps",
-  "version": "9.1.0",
+  "version": "9.4",
   "keywords": [
     "pebble-app"
   ],
@@ -42,7 +42,15 @@
       "updatewkut",
       "FinishedUpdates",
       "LaunchReminders",
-      "EventReminders"
+      "EventReminders",
+      "USASub",
+      "RUSSub",
+      "EUSub",
+      "ChinaSub",
+      "JPNSub",
+      "INDSub",
+      "OTHERSub",
+      "hourlywkut"
     ],
     "resources": {
       "media": [
@@ -56,8 +64,43 @@
         },
         {
           "type": "bitmap",
+          "name": "WAKEUP_IMAGE_EMERY",
+          "file": "Images/UpdatingTimelineEmery.png"
+        },
+        {
+          "type": "bitmap",
           "name": "WAKEUP_IMAGE",
-          "file": "Images/UpdatingTimeline.png"
+          "file": "Images/UpdatingTimelineOther.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "WAKEUP_IMAGE_GABBRO",
+          "file": "Images/UpdatingTimelineGabbro.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "WAKEUP_IMAGE_CHALK",
+          "file": "Images/UpdatingTimelineChalk.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "PLACEHOLDER_EMERY",
+          "file": "Images/PlaceholderEmery.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "PLACEHOLDER",
+          "file": "Images/PlaceholderOther.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "PLACEHOLDER_GABBRO",
+          "file": "Images/PlaceholderGabbro.png"
+        },
+        {
+          "type": "bitmap",
+          "name": "PLACEHOLDER_CHALK",
+          "file": "Images/PlaceholderChalk.png"
         },
         {
           "type": "png",

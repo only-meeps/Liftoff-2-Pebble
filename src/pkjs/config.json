@@ -7,7 +7,7 @@
     },
     {
         "type": "text",
-        "defaultValue": "Event settings (Will not change existing)"
+        "defaultValue": "Event settings"
     },
     {
         "type": "section",
@@ -23,6 +23,33 @@
                 "messageKey": "Events",
                 "label": "Other events (ie. announcements, docking, ect.)",
                 "defaultValue": true
+            }
+        ]
+    },
+    {
+        "type": "text",
+        "defaultValue": "Wakeup settings (for updating timeline)"
+    },
+    {
+        "type": "section",
+        "items": [
+            {
+                "type": "toggle",
+                "messageKey": "hourlywkut",
+                "id": "hourlySelectToggle",
+                "defaultValue": false,
+                "label": "Refresh timeline hourly"
+            },
+            {
+                "type": "input",
+                "messageKey": "wkut",
+                "defaultValue": "1:00",
+                "label": "Wakeup Time",
+                "id": "hourlySelect",
+                "attributes": {
+                    "placeholder": "wakeup time",
+                    "type": "time"
+                }
             }
         ]
     },
@@ -50,6 +77,61 @@
                 "max": 30,
                 "min": 0,
                 "description": "Leave at 0 to turn off"
+            }
+        ]
+    },
+    {
+        "type": "text",
+        "defaultValue": "Also note that the data will refresh when you open the pebble app"
+    },
+    {
+        "type": "text",
+        "defaultValue": "Subscription Settings (What countries do you want on your timeline?)"
+    },
+    {
+        "type": "section",
+        "items": [
+            {
+                "type": "toggle",
+                "messageKey": "USASub",
+                "label": "🇺🇸 - USA",
+                "defaultValue": true
+            },
+            {
+                "type": "toggle",
+                "messageKey": "ChinaSub",
+                "label": "🇨🇳 - China",
+                "defaultValue": true
+            },
+            {
+                "type": "toggle",
+                "messageKey": "EUSub",
+                "label": "🇪🇺 - EU",
+                "defaultValue": true
+            },
+            {
+                "type": "toggle",
+                "messageKey": "RUSSub",
+                "label": "🇷🇺 - Russia",
+                "defaultValue": true
+            },
+            {
+                "type": "toggle",
+                "messageKey": "INDSub",
+                "label": "🇮🇳 - India",
+                "defaultValue": true
+            },
+            {
+                "type": "toggle",
+                "messageKey": "JPNSub",
+                "label": "🇯🇵 - Japan",
+                "defaultValue": true
+            },
+            {
+                "type": "toggle",
+                "messageKey": "OTHERSub",
+                "label": "❓ - Other",
+                "defaultValue": true
             }
         ]
     },
