@@ -20,8 +20,43 @@ var jpnL;
 var indL;
 var otherL;
 
+function initializeClayDefaults(config) {
+    var settings = {};
+
+    try {
+        settings = JSON.parse(localStorage.getItem('clay-settings')) || {};
+    } catch (e) {
+        settings = {};
+    }
+
+    var updated = false;
+
+    function processItem(item) {
+        if (!item) return;
+        if (item.messageKey && item.defaultValue !== undefined) {
+            if (settings[item.messageKey] === undefined || settings[item.messageKey] === null) {
+                settings[item.messageKey] = item.defaultValue;
+                updated = true;
+            }
+        }
+
+        if (item.items && Array.isArray(item.items)) {
+            item.items.forEach(processItem);
+        }
+    }
+    if (Array.isArray(config)) {
+        config.forEach(processItem);
+    }
+
+    if (updated) {
+        localStorage.setItem('clay-settings', JSON.stringify(settings));
+        console.log("Initialized missing Clay default settings into localStorage.");
+    }
+}
+
 Pebble.addEventListener('ready', function () {
     console.log('PebbleKit JS ready!');
+    initializeClayDefaults(clayConfig);
     Pebble.getTimelineToken(
         function (token) {
             console.log('Successfully obtained timeline token: ' + token);
@@ -144,7 +179,8 @@ function fetchData(launches, events) {
                             const exists = json.results.some(x => x.id === storedLaunches.results[i].id);
 
                             if (!exists) {
-                                deletePin(storedLaunches.results[i].id);
+                                console.log("Placeholder for deleting pin: " + storedLaunches.results[i].id)
+                                //deletePin(storedLaunches.results[i].id);
                             }
                         }
                         console.log("Finished checking for canceled launches.");
@@ -206,7 +242,8 @@ function fetchData(launches, events) {
                             const exists = json.results.some(x => x.id === storedEvents.results[i].id);
 
                             if (!exists) {
-                                deletePin(storedEvents.results[i].id);
+                                console.log("Placeholder for deleting pin: " + storedLaunches.results[i].id)
+                                //deletePin(storedEvents.results[i].id);
                             }
                         }
                         console.log("Finished checking for canceled events.");
@@ -357,80 +394,76 @@ function sendNextLaunchMessage(items, index, reminder, reminderTime) {
         return;
     }
 
+    if (idx != -1) {
+        var name = itemName.slice(0, idx);
+    }
     if (reminder) {
-        if (idx != -1) {
-            var name = itemName.slice(0, idx);
-        }
-        if (reminder) {
-            const date = new Date(item.net);
+        const date = new Date(item.net);
 
-            date.setUTCMinutes(date.getUTCMinutes() - reminderTime);
+        date.setUTCMinutes(date.getUTCMinutes() - reminderTime);
 
-            const updatedDateStr = date.toISOString();
-            const pinData = {
-                "id": item.id,
-                "time": item.net,
-                "layout": {
-                    "type": "genericPin",
-                    "title": name,
-                    "tinyIcon": "app://images/TL_ICON",
-                    "body": "Mission: " + missionName + "\n \nMisson Description:\n" + missionDesc,
-                    "subtitle": locationName,
-                    "lastupdated": new Date().toISOString()
-                },
-                "reminders": [
-                    {
-                        "time": updatedDateStr,
-                        "layout": {
-                            "type": "genericReminder",
-                            "tinyIcon": "app://images/TL_ICON",
-                            "title": name + " takeoff in T-" + reminderTime + "m"
-                        }
+        const updatedDateStr = date.toISOString();
+        const pinData = {
+            "id": String(item.id),
+            "time": item.net,
+            "layout": {
+                "type": "genericPin",
+                "title": name,
+                "tinyIcon": "app://images/TL_ICON",
+                "body": "Mission: " + missionName + "\n \nMisson Description:\n" + missionDesc,
+                "subtitle": locationName,
+                "lastupdated": new Date().toISOString()
+            },
+            "reminders": [
+                {
+                    "time": updatedDateStr,
+                    "layout": {
+                        "type": "genericReminder",
+                        "tinyIcon": "app://images/TL_ICON",
+                        "title": name + " takeoff in T-" + reminderTime + "m"
                     }
-                ],
-                "actions": [
-                    {
-                        "title": "Force update",
-                        "type": "openWatchApp",
-                        "launchCode": 1
-                    }
-                ]
-            };
-            pushTimelinePin(pinData);
-            const cSeconds = Math.floor(new Date(item.net).getTime() / 1000);
+                }
+            ],
+            "actions": [
+                {
+                    "title": "Force update",
+                    "type": "openWatchApp",
+                    "launchCode": 1
+                }
+            ]
+        };
+        pushTimelinePin(pinData);
+        const cSeconds = Math.floor(new Date(item.net).getTime() / 1000);
 
-            console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + item.id + " reminder: " + reminderTime + " minutes before");
+        console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + String(item.id) + " reminder: " + reminderTime + " minutes before");
 
-            sendNextLaunchMessage(items, index + 1, true, reminderTime);
-        }
-        else {
-            const pinData = {
-                "id": item.id,
-                "time": item.net,
-                "layout": {
-                    "type": "genericPin",
-                    "title": name,
-                    "tinyIcon": "app://images/TL_ICON",
-                    "body": "Mission: " + missionName + "\n \nMisson Description:\n" + missionDesc,
-                    "subtitle": locationName,
-                    "lastupdated": new Date().toISOString()
-                },
-                "actions": [
-                    {
-                        "title": "Force update",
-                        "type": "openWatchApp",
-                        "launchCode": 1
-                    }
-                ]
-            };
-            pushTimelinePin(pinData);
-            const cSeconds = Math.floor(new Date(item.net).getTime() / 1000);
+        sendNextLaunchMessage(items, index + 1, true, reminderTime);
+    }
+    else {
+        const pinData = {
+            "id": String(item.id),
+            "time": item.net,
+            "layout": {
+                "type": "genericPin",
+                "title": name,
+                "tinyIcon": "app://images/TL_ICON",
+                "body": "Mission: " + missionName + "\n \nMisson Description:\n" + missionDesc,
+                "subtitle": locationName,
+                "lastupdated": new Date().toISOString()
+            },
+            "actions": [
+                {
+                    "title": "Force update",
+                    "type": "openWatchApp",
+                    "launchCode": 1
+                }
+            ]
+        };
+        pushTimelinePin(pinData);
+        const cSeconds = Math.floor(new Date(item.net).getTime() / 1000);
 
-            console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + item.id);
-            sendNextLaunchMessage(items, index + 1, false, 0);
-        }
-
-
+        console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + String(item.id));
+        sendNextLaunchMessage(items, index + 1, false, 0);
     }
 }
 
@@ -515,7 +548,7 @@ function sendNextEventMessage(items, index, reminder, reminderTime) {
 
         const updatedDateStr = date.toISOString();
         const pinData = {
-            "id": item.id,
+            "id": String(item.id),
             "time": item.date,
             "layout": {
                 "type": "genericPin",
@@ -546,12 +579,12 @@ function sendNextEventMessage(items, index, reminder, reminderTime) {
         pushTimelinePin(pinData);
         const cSeconds = Math.floor(new Date(item.date).getTime() / 1000);
 
-        console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + item.id + " reminder: " + reminderTime + " minutes before");
+        console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + String(item.id) + " reminder: " + reminderTime + " minutes before");
         sendNextEventMessage(items, index + 1, true, reminderTime);
     }
     else {
         const pinData = {
-            "id": item.id,
+            "id": String(item.id),
             "time": item.date,
             "layout": {
                 "type": "genericPin",
@@ -572,7 +605,7 @@ function sendNextEventMessage(items, index, reminder, reminderTime) {
         pushTimelinePin(pinData);
         const cSeconds = Math.floor(new Date(item.date).getTime() / 1000);
 
-        console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + item.id);
+        console.log('Message ' + index + ' sent successfully: ' + item.name + " time: " + cSeconds + " id: " + String(item.id));
         sendNextEventMessage(items, index + 1, false, 0);
     }
 
